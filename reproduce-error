@@ -1,8 +1,48 @@
 #!/bin/sh
+
+set -ex
+
 root_path=${PWD}
 
-name=$(lein print :name | sed 's|"||g')
-version=$(lein print :version | sed 's|"||g')
+name=degasolv
+version=2.3.0-SNAPSHOT
+
+test_home=test/resources/data/apt
+
+rm -rf ${root_path}/META-INF
+mkdir -p ${root_path}/META-INF/native-image
+
+
+#    -agentlib:native-image-agent=config-merge-output-dir=META-INF/native-image \
+#    jdk.internal.vm.ci does not export jdk.vm.ci.services
+#
+#    features. The config-merge-dir option adds to an existing set of configuration files, as follows:
+
+
+rm -rf ${root_path}/META-INF
+mkdir -p ${root_path}/META-INF/native-image
+
+
+java \
+    -Xss16m \
+    -agentlib:native-image-agent=config-output-dir=META-INF/native-image \
+    -jar target/uberjar/${name}-${version}-standalone.jar \
+    resolve-locations \
+    --resolve-strat "fast" \
+    --repository "binary-amd64 file://${PWD}/${test_home}/avail /" \
+    --package-system apt \
+    --requirement "libc6"
+
+java \
+    -Xss16m \
+    -agentlib:native-image-agent=config-merge-dir=META-INF/native-image \
+    -jar target/uberjar/${name}-${version}-standalone.jar \
+    resolve-locations \
+    --resolve-strat "fast" \
+    --repository "binary-amd64 https://github.com/djhaskin987/degasolv/raw/develop/test/resources/data/apt/avail /" \
+    --package-system apt \
+    --requirement "libc6"
+
 
 #    --initialize-at-run-time=org.postgresql.sspi.SSPIClient
 #    --initialize-at-run-time=java.lang.Math\$RandomNumberGeneratorHolder \

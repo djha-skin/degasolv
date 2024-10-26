@@ -8,8 +8,9 @@
                                     :password :env/clojars_password
                                     :sign-releases false}]]
 
-  :dependencies [[org.clojure/clojure "1.10.3"]
+  :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.flatland/ordered "1.5.9"]
+                 [com.github.clj-easy/graal-build-time "1.0.5"]
                  [clj-http "3.12.0"]]
                  ;;[org.martinklepsch/clj-http-lite "0.4.3"]]
   :plugins [[lein-licenses "0.2.2"]
